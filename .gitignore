@@ -1,4 +1,5 @@
 .DS_Store
-Builds/
-JuceLibraryCode/
+Builds
+JuceLibraryCode
+.ipynb_checkpoints
 
