@@ -2,17 +2,21 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class DkmethodPluginTestAudioProcessor  : public AudioProcessor
+class DkmethodPluginTestAudioProcessor : public AudioProcessor,
+                                         public AudioProcessorValueTreeState::Listener
 {
 public:
     DkmethodPluginTestAudioProcessor();
-    ~DkmethodPluginTestAudioProcessor();
 
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
 
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+
+    void parameterChanged (const String&, float) override;
+
+    AudioProcessorValueTreeState& getValueTreeState() { return parameters; }
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
@@ -32,9 +36,15 @@ public:
     //==============================================================================
 
 private:
+    AudioProcessorValueTreeState parameters;
+
     dkm::Model model0, model1;
-    dsp::Gain<double> inputGain, interGain, outputGain;
+    dsp::Gain<double> driveGain, interGain, outputGain, volumeGain;
     AudioBuffer<double> modelBuffer;
+
+    Atomic<int> shouldUpdate = true;
+    void update();
+    Atomic<double> newDrive = 0.f, newVolume = 0.f;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DkmethodPluginTestAudioProcessor)
 };

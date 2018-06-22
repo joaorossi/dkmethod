@@ -1,22 +1,20 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-    It contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//==============================================================================
-DkmethodPluginTestAudioProcessorEditor::DkmethodPluginTestAudioProcessorEditor (DkmethodPluginTestAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p)
+DkmethodPluginTestAudioProcessorEditor::DkmethodPluginTestAudioProcessorEditor (DkmethodPluginTestAudioProcessor& p) :
+    AudioProcessorEditor (&p),
+    processor (p),
+    driveAtt (processor.getValueTreeState(), "drive", drive),
+    volumeAtt (processor.getValueTreeState(), "volume", volume)
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
+    drive.setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    drive.setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
+    volume.setSliderStyle (Slider::RotaryHorizontalVerticalDrag);
+    volume.setTextBoxStyle (Slider::TextBoxBelow, false, 40, 20);
+
+    addAndMakeVisible (drive);
+    addAndMakeVisible (volume);
+
     setSize (400, 300);
 }
 
@@ -24,19 +22,11 @@ DkmethodPluginTestAudioProcessorEditor::~DkmethodPluginTestAudioProcessorEditor(
 {
 }
 
-//==============================================================================
-void DkmethodPluginTestAudioProcessorEditor::paint (Graphics& g)
-{
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-
-    g.setColour (Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), Justification::centred, 1);
-}
-
 void DkmethodPluginTestAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto bounds = getLocalBounds();
+    auto w = bounds.getWidth();
+
+    drive.setBounds (bounds.removeFromLeft (w / 2).withSizeKeepingCentre (175, 175));
+    volume.setBounds (bounds.removeFromRight (w / 2).withSizeKeepingCentre (175, 175));
 }

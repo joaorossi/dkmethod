@@ -36,47 +36,6 @@ MainComponent::MainComponent() :
 //    model.addComponent (dkm::ComponentFactory::makeInput ("Vps3", 16, 0));
 //    model.addComponent (dkm::ComponentFactory::makeOutput ("Out", 14, 0));
 
-    double R1, R2, R3, R4, R5;
-    R1 = 68000.0;
-    R2 = 1000000.0;
-    R3 = 2700.0;
-    R4 = 100000.0;
-    R5 = 1000000.0;
-
-    double C1, C2, C3, C4;
-    C1 = 0.00000002;
-    C2 = 0.00002;
-    C3 = 0.00000002;
-    C4 = 0.000000000002;
-
-    model0.addComponent (dkm::ComponentFactory::makeResistor (R1, "R1", 2, 3));
-    model0.addComponent (dkm::ComponentFactory::makeResistor (R2, "R2", 3, 0));
-    model0.addComponent (dkm::ComponentFactory::makeResistor (R3, "R3", 4, 0));
-    model0.addComponent (dkm::ComponentFactory::makeResistor (R4, "R4", 5, 6));
-    model0.addComponent (dkm::ComponentFactory::makeResistor (R5, "R5", 7, 0));
-    model0.addComponent (dkm::ComponentFactory::makeCapacitor (C1, "C1", 1, 2));
-    model0.addComponent (dkm::ComponentFactory::makeCapacitor (C2, "C2", 4, 0));
-    model0.addComponent (dkm::ComponentFactory::makeCapacitor (C3, "C3", 5, 7));
-    model0.addComponent (dkm::ComponentFactory::makeCapacitor (C4, "C4", 3, 5));
-    model0.addComponent (dkm::ComponentFactory::makeTriode ("T1", 3, 5, 4));
-    model0.addComponent (dkm::ComponentFactory::makeInput ("In", 1, 0));
-    model0.addComponent (dkm::ComponentFactory::makeInput ("Vps", 6, 0));
-    model0.addComponent (dkm::ComponentFactory::makeOutput ("Out", 7, 0));
-
-    model1.addComponent (dkm::ComponentFactory::makeResistor (R1, "R1", 2, 3));
-    model1.addComponent (dkm::ComponentFactory::makeResistor (R2, "R2", 3, 0));
-    model1.addComponent (dkm::ComponentFactory::makeResistor (R3, "R3", 4, 0));
-    model1.addComponent (dkm::ComponentFactory::makeResistor (R4, "R4", 5, 6));
-    model1.addComponent (dkm::ComponentFactory::makeResistor (R5, "R5", 7, 0));
-    model1.addComponent (dkm::ComponentFactory::makeCapacitor (C1, "C1", 1, 2));
-    model1.addComponent (dkm::ComponentFactory::makeCapacitor (C2, "C2", 4, 0));
-    model1.addComponent (dkm::ComponentFactory::makeCapacitor (C3, "C3", 5, 7));
-    model1.addComponent (dkm::ComponentFactory::makeCapacitor (C4, "C4", 3, 5));
-    model1.addComponent (dkm::ComponentFactory::makeTriode ("T1", 3, 5, 4));
-    model1.addComponent (dkm::ComponentFactory::makeInput ("In", 1, 0));
-    model1.addComponent (dkm::ComponentFactory::makeInput ("Vps", 6, 0));
-    model1.addComponent (dkm::ComponentFactory::makeOutput ("Out", 7, 0));
-
     AudioBuffer<double> buffer (2, blockSize);
     buffer.clear();
 
