@@ -15,7 +15,7 @@ DkmethodPluginTestAudioProcessorEditor::DkmethodPluginTestAudioProcessorEditor (
     addAndMakeVisible (drive);
     addAndMakeVisible (volume);
 
-    setSize (400, 300);
+    setSize (400, 250);
 }
 
 DkmethodPluginTestAudioProcessorEditor::~DkmethodPluginTestAudioProcessorEditor()
@@ -27,6 +27,6 @@ void DkmethodPluginTestAudioProcessorEditor::resized()
     auto bounds = getLocalBounds();
     auto w = bounds.getWidth();
 
-    drive.setBounds (bounds.removeFromLeft (w / 2).withSizeKeepingCentre (175, 175));
-    volume.setBounds (bounds.removeFromRight (w / 2).withSizeKeepingCentre (175, 175));
+    drive.setBounds (bounds.removeFromLeft (w / 2).withSizeKeepingCentre (150, 150));
+    volume.setBounds (bounds.removeFromRight (w / 2).withSizeKeepingCentre (150, 150));
 }

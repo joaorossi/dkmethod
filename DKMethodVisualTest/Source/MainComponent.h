@@ -14,9 +14,9 @@ public:
 private:
     const double sampleRate = 48000.0;
     const double samplePeriod = 1.0 / sampleRate;
-    const int blockSize = 48000 * 10;
+    const int blockSize = 48000 * 5;
 
-    dkm::Model model0, model1;
+    dkm::Model model;
     dsp::Gain<double> input, midle, output;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)

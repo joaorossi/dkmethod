@@ -38,9 +38,11 @@ public:
 private:
     AudioProcessorValueTreeState parameters;
 
-    dkm::Model model0, model1;
-    dsp::Gain<double> driveGain, interGain, outputGain, volumeGain;
+    dkm::Model model;
+    dsp::Gain<double> driveGain, outputGain, volumeGain;
     AudioBuffer<double> modelBuffer;
+
+    void forceSteadyState (int blockSize);
 
     Atomic<int> shouldUpdate = true;
     void update();
