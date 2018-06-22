@@ -32,12 +32,13 @@ void Model::addComponent (Component component)
         nodes.addIfNotAlreadyThere (componentNode);
 }
 
-void Model::process (dsp::AudioBlock<double> block)
+void Model::process (const dsp::ProcessContextReplacing<double>& context)
 {
+    auto block = context.getOutputBlock();
     auto samples = block.getNumSamples();
 
     // Nonlinear currents
-    arma::mat I;
+    arma::mat I = arma::zeros<arma::mat> (V.n_rows, 1);
 
     arma::mat p, out;
 
@@ -57,9 +58,21 @@ void Model::process (dsp::AudioBlock<double> block)
     }
 }
 
+void Model::prepare (const dsp::ProcessSpec& spec)
+{
+    sampleRate = spec.sampleRate;
+    samplePeriod = 1.0 / sampleRate;
+    calculateMatrixes();
+}
+
+void Model::reset()
+{
+    X.clear();
+    V.clear();
+}
+
 void Model::solveNonlinearFunc (const arma::mat& p, const arma::mat& k, arma::mat& i, arma::mat& v)
 {
-    // Newton-Raphson
     int iter = maxIter;
 
     arma::mat v0 = v;
@@ -82,26 +95,28 @@ void Model::solveNonlinearFunc (const arma::mat& p, const arma::mat& k, arma::ma
 
 void Model::modelNonlinearity (const arma::mat& v, arma::mat& i, arma::mat& j)
 {
+    arma::mat iComp1, jComp1, iComp2, jComp2;
+    iComp1.set_size (1, 1);
+    jComp1.set_size (1, 1);
+    iComp2.set_size (2, 1);
+    jComp2.set_size (2, 2);
+
     for (int nl = 0; nl < nonlinear.size();)
     {
         auto& comp = nonlinear.getReference (nl);
         auto ports = comp.numOfPorts;
-
-        arma::mat iComp, jComp;
-        iComp.set_size (ports, 1);
-        jComp.set_size (ports, ports);
         
         if (ports == 1)
         {
-            comp.model (v.row (nl), iComp, jComp);
-            i.submat (nl, 0, nl, 0) = iComp;
-            j.submat (nl, nl, nl, nl) = jComp;
+            comp.model (v.row (nl), iComp1, jComp1);
+            i.submat (nl, 0, nl, 0) = iComp1;
+            j.submat (nl, nl, nl, nl) = jComp1;
         }
         if (ports == 2)
         {
-            comp.model (v.rows (nl, nl + 1), iComp, jComp);
-            i.submat (nl, 0, nl + 1, 0) = iComp;
-            j.submat (nl, nl, nl + 1, nl + 1) = jComp;
+            comp.model (v.rows (nl, nl + 1), iComp2, jComp2);
+            i.submat (nl, 0, nl + 1, 0) = iComp2;
+            j.submat (nl, nl, nl + 1, nl + 1) = jComp2;
         }
 
         nl += ports;
@@ -110,6 +125,7 @@ void Model::modelNonlinearity (const arma::mat& v, arma::mat& i, arma::mat& j)
 
 void Model::calculateMatrixes()
 {
+    ScopedNoDenormals noDenomals;
 
     arma::mat Nr = arma::zeros<arma::mat> (resistor.size(), nodes.size());
     arma::mat Gr = arma::zeros<arma::mat> (resistor.size(), resistor.size());
@@ -130,6 +146,10 @@ void Model::calculateMatrixes()
 
         Jt = arma::zeros<arma::mat> (nonlinearPorts, nonlinearPorts);
         it = arma::zeros<arma::mat> (nonlinearPorts, 1);
+        iComp1 = arma::zeros<arma::mat> (1, 1);
+        jComp1 = arma::zeros<arma::mat> (1, 1);
+        iComp2 = arma::zeros<arma::mat> (2, 1);
+        jComp2 = arma::zeros<arma::mat> (2, 2);
     }
 
     //arma::mat Nv = arma::zeros<arma::mat> (potentiometer.size(), nodes.size()); TODO!!
@@ -204,37 +224,25 @@ void Model::calculateMatrixes()
         }
     }
 
+    // Trim ground node of incidence matrixes
     Nr.shed_col (0);
     Nx.shed_col (0);
     Nn.shed_col (0);
-//    Nv.shed_col (0);
+//  Nv.shed_col (0);
     Nu.shed_col (0);
     No.shed_col (0);
     Nopao.shed_col (0);
     Nopai.shed_col (0);
 
-    Nr.print ("Nr:");
-    Gr.print ("Gr:");
-    Nx.print ("Nx:");
-    Gx.print ("Gx:");
-    Z.print ("Z:");
-    Nu.print ("Nu:");
-    No.print ("No:");
-    Nn.print ("Nn:");
-//    Nv.print ("Nv:");
-    Nopai.print ("Nopao:");
-    Nopao.print ("Nopai:");
-    U.print ("U:");
-
-    ScopedNoDenormals noDenomals;
-
     auto numVoltageSources = Nu.n_rows;
+
+    // Assemble conductance matrix
+    // TODO - Add variable resistor matrixes
     arma::mat S;
     {
         arma::mat tmp1 = arma::join_horiz ((Nr.t() * Gr * Nr) + (Nx.t() * Gx * Nx), Nu.t());
         arma::mat tmp2 = arma::join_horiz (Nu, arma::zeros<arma::mat> (numVoltageSources, numVoltageSources));
         S = arma::join_vert (tmp1, tmp2);
-        S.print ("S:");
     }
 
     // Extend conductance matrix for OPAs
@@ -248,7 +256,6 @@ void Model::calculateMatrixes()
                                            arma::zeros<arma::mat> (Nopao.n_rows, Nopao.n_rows));
 
         S = arma::join_vert (tmp1, tmp2);
-        S.print ("S with OPAs:");
     }
 
     arma::mat Nxp = arma::join_horiz (Nx, arma::zeros<arma::mat> (Nx.n_rows, numVoltageSources + opa.size()));
@@ -262,38 +269,43 @@ void Model::calculateMatrixes()
         Nup2 = arma::join_vert (Nup2, arma::zeros<arma::mat> (opa.size(), numVoltageSources));
 
     arma::mat Si = S.i();
-    Si.print ("Si:");
 
-    // Calculate system matrixes
     arma::mat NxpT = Nxp.t();
     arma::mat NnpT = Nnp.t();
 
     A = ((Z * Gx * Nxp * Si * NxpT) * 2.0) - Z;
-    A.print ("A:");
-
     B = (Z * Gx * Nxp * Si * Nup2) * 2.0;
-    B.print ("B:");
-
     C = (Z * Gx * Nxp * Si * NnpT) * 2.0;
-    C.print ("C:");
-
     D = Nop * Si * NxpT;
-    D.print ("D:");
-
     E = Nop * Si * Nup2;
-    E.print ("E:");
-
     F = Nop * Si * NnpT;
-    F.print ("F:");
-
     G = Nnp * Si * NxpT;
-    G.print ("G:");
-
     H = Nnp * Si * Nup2;
-    H.print ("H:");
-
     K = Nnp * Si * NnpT;
+
+#ifdef DKM_DEBUG_MATRIXES
+    Nr.print ("Nr:");
+    Gr.print ("Gr:");
+    Nx.print ("Nx:");
+    Gx.print ("Gx:");
+    Z.print ("Z:");
+    Nu.print ("Nu:");
+    No.print ("No:");
+    Nn.print ("Nn:");
+    Nopai.print ("Nopao:");
+    Nopao.print ("Nopai:");
+    S.print ("S:");
+    Si.print ("Si:");
+    A.print ("A:");
+    B.print ("B:");
+    C.print ("C:");
+    D.print ("D:");
+    E.print ("E:");
+    F.print ("F:");
+    G.print ("G:");
+    H.print ("H:");
     K.print ("K:");
+#endif
 }
 
 } // namespce dkm

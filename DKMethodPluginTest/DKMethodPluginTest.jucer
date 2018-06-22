@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="rpq1LC" name="DKMethodPluginTest" projectType="audioplug"
+              jucerVersion="5.3.2" pluginFormats="buildAU,buildStandalone,buildVST"
+              headerPath="/Users/joaorossifilho/Documents/armadillo-code/include">
+  <MAINGROUP id="ZPolGU" name="DKMethodPluginTest">
+    <GROUP id="{74DA0D18-2F52-4F0F-8D1C-BA9B59F256C2}" name="Source">
+      <FILE id="OYckg1" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="iGDTZK" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="Amfz4I" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="CDFyml" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../../soundspot/JUCE/modules"/>
+        <MODULEPATH id="juce_dkmethod" path=".."/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dkmethod" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS/>
+</JUCERPROJECT>

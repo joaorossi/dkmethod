@@ -4,6 +4,5 @@
 
 #include "juce_dkmethod.h"
 
-#include "Components/Component.cpp"
 #include "Components/ComponentFactory.cpp"
 #include "Model/Model.cpp"
